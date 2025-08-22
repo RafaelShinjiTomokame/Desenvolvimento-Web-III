@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Pessoas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Pessoas</a>
+            <a href="carros.html">Carros</a>
+            <a href="associacoes.html">Associações</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Gerenciar Pessoas</h1>
+        <section id="form-section">
+            <h2>Cadastrar Nova Pessoa</h2>
+            <form id="pessoa-form">
+                <input type="text" id="nome-pessoa" placeholder="Nome da pessoa" required>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </section>
+        <section id="list-section">
+            <h2>Pessoas Cadastradas</h2>
+            <ul id="pessoas-list"></ul>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

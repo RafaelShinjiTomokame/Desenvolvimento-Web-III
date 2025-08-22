@@ -1,0 +1,61 @@
+// Arquivo: prisma/schema.prisma
+
+// Define o gerador de cliente Prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Define a fonte de dados (seu banco de dados)
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo para a tabela 'pessoa'
+model Pessoa {
+  id        Int              @id @default(autoincrement())
+  nome      String           @db.VarChar(30)
+  
+  // Relações
+  carros    PessoaPorCarro[] // Uma pessoa pode estar associada a vários carros
+  telefones Telefone[]       // Uma pessoa pode ter vários telefones
+
+  @@map("pessoa") // Mapeia este modelo para a tabela 'pessoa' no DB
+}
+
+// Modelo para a tabela 'telefone'
+model Telefone {
+  id       Int    @id @default(autoincrement())
+  numero   String @db.VarChar(11)
+  
+  // Relação com Pessoa (um telefone pertence a uma pessoa)
+  idpessoa Int    // Campo da chave estrangeira
+  pessoa   Pessoa @relation(fields: [idpessoa], references: [id])
+
+  @@map("telefone")
+}
+
+// Modelo para a tabela 'carro'
+model Carro {
+  id      Int              @id @default(autoincrement())
+  modelo  String           @db.VarChar(20)
+
+  // Relação
+  pessoas PessoaPorCarro[] // Um carro pode estar associado a várias pessoas
+
+  @@map("carro")
+}
+
+// Modelo para a tabela de junção 'pessoa_por_carro' (Relação N:N)
+model PessoaPorCarro {
+  // Relação com Pessoa
+  idpessoa Int
+  pessoa   Pessoa @relation(fields: [idpessoa], references: [id])
+  
+  // Relação com Carro
+  idcarro Int
+  carro   Carro  @relation(fields: [idcarro], references: [id])
+
+  @@id([idpessoa, idcarro]) // Define uma chave primária composta
+  @@map("pessoa_por_carro")
+}

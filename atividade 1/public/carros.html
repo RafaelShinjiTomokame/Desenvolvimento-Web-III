@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Carros</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Pessoas</a>
+            <a href="carros.html">Carros</a>
+            <a href="associacoes.html">Associações</a>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Gerenciar Carros</h1>
+        <section id="form-section">
+            <h2>Cadastrar Novo Carro</h2>
+            <form id="carro-form">
+                <input type="text" id="modelo-carro" placeholder="Modelo do carro" required>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </section>
+        <section id="list-section">
+            <h2>Carros Cadastrados</h2>
+            <ul id="carros-list"></ul>
+        </section>
+    </main>
+    
+    <script src="script.js"></script>
+</body>
+</html>
