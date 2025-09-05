@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Compras</title>
+    <!-- Incluindo Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+        .card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+        .product-item {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .product-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left-color: #3b82f6;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(to right, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+        .btn-secondary {
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        .fade-in { 
+            animation: fadeIn 0.3s ease-in-out; 
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .loader {
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin { 
+            to { transform: rotate(360deg); } 
+        }
+        input:focus, button:focus {
+            outline: none;
+        }
+        .price-tag {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-8 px-4">
+
+    <main class="card bg-white bg-opacity-95 p-6 sm:p-8 w-full max-w-2xl mx-auto">
+        
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Lista de Compras</h1>
+            <p class="text-gray-500">Organize seus produtos de forma simples e eficiente</p>
+        </header>
+
+        <!-- Formulário para Adicionar Produto -->
+        <form id="add-form" class="grid grid-cols-1 sm:grid-cols-7 gap-3 mb-8 p-4 bg-blue-50 rounded-xl slide-in">
+            <input type="text" id="product-name" placeholder="Nome do produto" 
+                class="col-span-4 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition bg-white" required>
+            <input type="number" id="product-price" placeholder="Valor" step="0.01" min="0" 
+                class="col-span-2 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition bg-white" required>
+            <button type="submit" class="btn-primary text-white font-semibold p-3 rounded-lg shadow-sm flex items-center justify-center">
+                <i class="fas fa-plus mr-2"></i> Add
+            </button>
+        </form>
+
+        <!-- Container da Lista de Produtos -->
+        <div id="loader-container" class="flex justify-center py-8">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+        </div>
+        
+        <div id="shopping-list" class="space-y-3"></div>
+        
+        <p id="empty-message" class="text-center text-gray-400 py-8 hidden">
+            <i class="fas fa-shopping-cart text-4xl mb-3 opacity-50"></i><br>
+            Sua lista de compras está vazia.<br>
+            <span class="text-sm">Adicione produtos usando o formulário acima.</span>
+        </p>
+
+    </main>
+
+    <!-- Modal para Edição -->
+    <div id="edit-modal" class="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md fade-in">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Editar Produto</h2>
+                <button id="cancel-edit" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="edit-form">
+                <input type="hidden" id="edit-product-id">
+                <div class="mb-4">
+                    <label for="edit-product-name" class="block text-sm font-medium text-gray-700 mb-2">Nome do produto</label>
+                    <input type="text" id="edit-product-name" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" required>
+                </div>
+                <div class="mb-6">
+                    <label for="edit-product-price" class="block text-sm font-medium text-gray-700 mb-2">Valor do produto</label>
+                    <input type="number" id="edit-product-price" step="0.01" min="0" class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" required>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancel-edit-btn" class="btn-secondary text-gray-800 font-medium py-2.5 px-5 rounded-lg transition-colors">Cancelar</button>
+                    <button type="submit" class="btn-primary text-white font-medium py-2.5 px-5 rounded-lg transition-colors">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_URL = 'http://localhost:5000/api/shopping';
+            const addForm = document.getElementById('add-form');
+            const productNameInput = document.getElementById('product-name');
+            const productPriceInput = document.getElementById('product-price');
+            const shoppingListContainer = document.getElementById('shopping-list');
+            const loader = document.getElementById('loader-container');
+            const emptyMessage = document.getElementById('empty-message');
+            const editModal = document.getElementById('edit-modal');
+            const editForm = document.getElementById('edit-form');
+            const editProductId = document.getElementById('edit-product-id');
+            const editProductName = document.getElementById('edit-product-name');
+            const editProductPrice = document.getElementById('edit-product-price');
+            const cancelEditBtn = document.getElementById('cancel-edit');
+            const cancelEditBtnMain = document.getElementById('cancel-edit-btn');
+
+            const fetchItems = async () => {
+                try {
+                    loader.style.display = 'flex';
+                    shoppingListContainer.innerHTML = '';
+                    emptyMessage.classList.add('hidden');
+                    const response = await fetch(API_URL);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const items = await response.json();
+                    renderItems(items);
+                } catch (error) {
+                    console.error('Falha ao buscar itens:', error);
+                    shoppingListContainer.innerHTML = `
+                        <div class="text-center p-6 bg-red-50 rounded-lg border border-red-200">
+                            <i class="fas fa-exclamation-circle text-red-500 text-3xl mb-3"></i>
+                            <p class="text-red-500">Não foi possível carregar a lista.</p>
+                        </div>`;
+                } finally {
+                    loader.style.display = 'none';
+                }
+            };
+
+            const renderItems = (items) => {
+                shoppingListContainer.innerHTML = '';
+                if (items.length === 0) {
+                    emptyMessage.classList.remove('hidden');
+                } else {
+                    items.forEach(item => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = 'product-item flex items-center justify-between bg-white p-4 rounded-lg border border-gray-100 shadow-sm slide-in';
+                        itemElement.innerHTML = `
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-blue-100 p-2 rounded-lg">
+                                    <i class="fas fa-shopping-basket text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">${item.name}</p>
+                                    <div class="flex items-center mt-1">
+                                        <span class="price-tag">R$ ${Number(item.price).toFixed(2).replace('.', ',')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button data-id="${item._id}" data-name="${item.name}" data-price="${item.price}" class="edit-btn p-2 text-gray-400 hover:text-blue-500 rounded-full hover:bg-blue-50 transition-colors">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button data-id="${item._id}" class="delete-btn p-2 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 transition-colors">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>`;
+                        shoppingListContainer.appendChild(itemElement);
+                    });
+                }
+            };
+
+            const openEditModal = (id, name, price) => {
+                editProductId.value = id;
+                editProductName.value = name;
+                editProductPrice.value = price;
+                editModal.classList.remove('hidden');
+            };
+
+            const closeEditModal = () => editModal.classList.add('hidden');
+
+            addForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = productNameInput.value.trim();
+                const price = parseFloat(productPriceInput.value);
+                if (!name || isNaN(price)) return;
+                try {
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, price }),
+                    });
+                    addForm.reset();
+                    productNameInput.focus();
+                    await fetchItems();
+                } catch (error) { console.error('Falha ao adicionar item:', error); }
+            });
+
+            shoppingListContainer.addEventListener('click', async (e) => {
+                const editButton = e.target.closest('.edit-btn');
+                if (editButton) {
+                    const { id, name, price } = editButton.dataset;
+                    openEditModal(id, name, price);
+                }
+                const deleteButton = e.target.closest('.delete-btn');
+                if (deleteButton) {
+                    if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+                    try {
+                        await fetch(`${API_URL}/${deleteButton.dataset.id}`, { method: 'DELETE' });
+                        await fetchItems();
+                    } catch (error) { console.error('Falha ao deletar item:', error); }
+                }
+            });
+
+            editForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = editProductId.value;
+                const name = editProductName.value.trim();
+                const price = parseFloat(editProductPrice.value);
+                if (!id || !name || isNaN(price)) return;
+                try {
+                    await fetch(`${API_URL}/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, price }),
+                    });
+                    closeEditModal();
+                    await fetchItems();
+                } catch (error) { console.error('Falha ao atualizar item:', error); }
+            });
+
+            cancelEditBtn.addEventListener('click', closeEditModal);
+            cancelEditBtnMain.addEventListener('click', closeEditModal);
+            editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+
+            fetchItems();
+        });
+    </script>
+
+</body>
+</html>
