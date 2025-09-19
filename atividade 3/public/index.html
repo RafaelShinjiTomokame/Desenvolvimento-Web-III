@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Livros</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Cadastro de Livros</h1>
+    <form id="formLivro">
+        <input type="text" id="titulo" placeholder="Título" required /><br />
+        <input type="text" id="autor" placeholder="Autor" required /><br />
+        <input type="number" id="ano" placeholder="Ano" required /><br />
+        <button type="submit">Cadastrar Livro</button>
+    </form>
+
+    <h2>Livros Cadastrados</h2>
+    <div id="listaLivros" class="livros"></div>
+</body>
+
+</html>
+
+<script>
+    // Função para cadastrar livro
+    async function cadastrarLivro(event) {
+        event.preventDefault();
+
+        const livro = {
+            titulo: document.getElementById('titulo').value,
+            autor: document.getElementById('autor').value,
+            ano: parseInt(document.getElementById('ano').value),
+        };
+
+        const response = await fetch('http://localhost:3000/livros', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(livro),
+        });
+
+        const data = await response.json();
+        console.log('Livro cadastrado:', data);
+
+        // Atualizar a lista de livros
+        atualizarListaDeLivros();
+    }
+
+    // Função para exibir a lista de livros
+    async function atualizarListaDeLivros() {
+        const response = await fetch('http://localhost:3000/livros');
+        const livros = await response.json();
+        const listaLivros = document.getElementById('listaLivros');
+
+        listaLivros.innerHTML = ''; // limpar a lista antes de atualizá-la
+
+        livros.forEach(livro => {
+            const div = document.createElement('div');
+            div.className = 'livro-item';
+            div.innerHTML = `
+                <strong>${livro.titulo}</strong> - ${livro.autor} (${livro.ano})
+                <button class="btn btn-editar" onclick="editarLivro('${livro._id}')">Alterar</button>
+                <button class="btn btn-excluir" onclick="excluirLivro('${livro._id}')">Excluir</button>
+            `;
+            listaLivros.appendChild(div);
+        });
+    }
+
+    // Função para editar livro
+    async function editarLivro(id) {
+        const novoTitulo = prompt("Novo título:");
+        const novoAutor = prompt("Novo autor:");
+        const novoAno = prompt("Novo ano:");
+
+        if (novoTitulo && novoAutor && novoAno) {
+            const livroAtualizado = {
+                titulo: novoTitulo,
+                autor: novoAutor,
+                ano: parseInt(novoAno),
+            };
+
+            await fetch(`http://localhost:3000/livros/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(livroAtualizado),
+            });
+
+            atualizarListaDeLivros();
+        }
+    }
+
+    // Função para excluir livro
+    async function excluirLivro(id) {
+        if (confirm('Tem certeza que deseja excluir este livro?')) {
+            await fetch(`http://localhost:3000/livros/${id}`, {
+                method: 'DELETE',
+            });
+
+            atualizarListaDeLivros();
+        }
+    }
+
+    // Vincular o evento de submit do formulário à função de cadastro
+    document.getElementById('formLivro').addEventListener('submit', cadastrarLivro);
+
+    // Carregar a lista de livros ao carregar a página
+    window.onload = atualizarListaDeLivros;
+</script>
