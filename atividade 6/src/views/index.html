@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Despesas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Controle de Despesas</h1>
+        </header>
+
+        <main>
+            <section class="form-section">
+                <h2>Nova Despesa</h2>
+                <form id="expenseForm">
+                    <div class="form-group">
+                        <label for="description">Descrição:</label>
+                        <input type="text" id="description" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amount">Valor (R$):</label>
+                        <input type="number" id="amount" step="0.01" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">Data:</label>
+                        <input type="date" id="date">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Cadastrar Despesa</button>
+                </form>
+            </section>
+
+            <section class="expenses-section">
+                <h2>Despesas Cadastradas</h2>
+                <div class="total-section">
+                    <h3 id="totalExpenses">Total das Despesas: R$0.00</h3>
+                </div>
+                <div id="expensesList" class="expenses-list">
+                    <!-- Lista de despesas será carregada aqui -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para edição -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Editar Despesa</h2>
+            <form id="editForm">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label for="editDescription">Descrição:</label>
+                    <input type="text" id="editDescription" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editAmount">Valor (R$):</label>
+                    <input type="number" id="editAmount" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDate">Data:</label>
+                    <input type="date" id="editDate">
+                </div>
+                
+                <button type="submit" class="btn-primary">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
