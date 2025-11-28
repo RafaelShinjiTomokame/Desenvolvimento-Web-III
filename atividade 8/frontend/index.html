@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ordens de Serviço</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Sistema de Ordens de Serviço</h1>
+        </header>
+
+        <div class="stats-container">
+            <h2>📊 Estatísticas</h2>
+            <div id="statistics" class="stats-grid"></div>
+        </div>
+
+        <div class="form-section">
+            <h2>➕ Nova Ordem de Serviço</h2>
+            <form id="orderForm">
+                <div class="form-grid">
+                    <input type="text" id="titulo" placeholder="Título*" required>
+                    <textarea id="descricao" placeholder="Descrição*" required></textarea>
+                    <select id="prioridade" required>
+                        <option value="">Prioridade*</option>
+                        <option value="baixa">Baixa</option>
+                        <option value="média">Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                    <input type="text" id="setorSolicitante" placeholder="Setor Solicitante*" required>
+                    <input type="text" id="responsavel" placeholder="Responsável">
+                    <input type="date" id="prazoEstimado">
+                    <input type="number" id="valorServico" placeholder="Valor do Serviço*" step="0.01" required>
+                </div>
+                <button type="submit">Criar Ordem</button>
+            </form>
+        </div>
+
+        <div class="filters-section">
+            <h2>🔍 Filtros</h2>
+            <div class="filters">
+                <input type="text" id="searchTitle" placeholder="Buscar por título">
+                <select id="filterStatus">
+                    <option value="">Todos os status</option>
+                    <option value="aberta">Aberta</option>
+                    <option value="em andamento">Em Andamento</option>
+                    <option value="concluída">Concluída</option>
+                </select>
+                <select id="filterPrioridade">
+                    <option value="">Todas as prioridades</option>
+                    <option value="baixa">Baixa</option>
+                    <option value="média">Média</option>
+                    <option value="alta">Alta</option>
+                </select>
+                <button onclick="loadOrders()">Aplicar Filtros</button>
+            </div>
+        </div>
+
+        <div class="orders-section">
+            <h2>📋 Lista de Ordens</h2>
+            <div id="ordersList" class="orders-grid"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
