@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Eventos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎉 Gerenciador de Eventos</h1>
+        </header>
+
+        <!-- Formulário de Evento -->
+        <section class="form-section">
+            <h2 id="form-title">Adicionar Evento</h2>
+            <form id="event-form">
+                <input type="hidden" id="event-id">
+                
+                <div class="form-group">
+                    <label for="titulo">Título *</label>
+                    <input type="text" id="titulo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descricao">Descrição</label>
+                    <textarea id="descricao" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="data">Data *</label>
+                    <input type="datetime-local" id="data" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="local">Local *</label>
+                    <input type="text" id="local" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="valor">Valor (R$) *</label>
+                    <input type="number" id="valor" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submit-btn">Adicionar Evento</button>
+                    <button type="button" id="cancel-btn" style="display: none;">Cancelar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Busca -->
+        <section class="search-section">
+            <div class="search-group">
+                <input type="text" id="search-input" placeholder="Pesquisar por título...">
+                <button onclick="searchEvents()">🔍 Buscar</button>
+                <button onclick="loadEvents()">🔄 Limpar</button>
+            </div>
+        </section>
+
+        <!-- Lista de Eventos -->
+        <section class="events-section">
+            <h2>Eventos Cadastrados</h2>
+            <div id="events-list" class="events-grid">
+                <!-- Eventos serão carregados aqui -->
+            </div>
+        </section>
+
+        <!-- Mensagens -->
+        <div id="message" class="message"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
